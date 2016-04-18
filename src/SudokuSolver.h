@@ -8,7 +8,6 @@ class SudokuSolver {
 
 	public:
 		SudokuSolver(vector<vector<char>>);
-		void Solve();
 
 	private:
 		
