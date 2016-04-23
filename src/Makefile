@@ -10,3 +10,4 @@ SudokuSolver: Application.cpp SudokuSolver.h SudokuSolver.cpp ImageProcessor.h I
 
 clean:
 	-rm -f SudokuSolver
+	

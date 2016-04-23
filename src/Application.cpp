@@ -7,7 +7,7 @@ using namespace cv;
 using namespace std;
 
 const char* windowName = "SudokuSolver";
-const char* sudokuFile = "../data/sudoku.jpg";
+const char* sudokuFile = "../data/sudoku.png";
 
 int main() {
 	vector<vector<char>> sudoku;
@@ -30,10 +30,6 @@ int main() {
 	vector<char> r9 = {'.', '.', '.', '.', '8', '.', '.', '7', '9'};
 	sudoku.push_back(r9);
 
-	SudokuSolver solver(sudoku);
-
-	solver.Solve();
-
 	for(int i = 0; i < 9; i++) {
 		for(int j = 0; j < 9 ; j++) {
 			cout << sudoku[i][j] << " ";
@@ -41,10 +37,25 @@ int main() {
 		cout << endl;
 	}
 
-	//namedWindow(windowName, 1);
-	//Mat sudokuImage = imread(sudokuFile, 1);
-	//imshow(windowName, sudokuImage);
-	//waitKey();
+	namedWindow(windowName, 1);
+	Mat sudokuImage = imread(sudokuFile, 1);
+
+	ImageProcessor imageProcessor(sudoku, sudokuImage);
+	imageProcessor.PopulateBoard();
+
+	SudokuSolver solver(sudoku);
+	solver.Solve();
+
+	cout << endl << endl;
+	for(int i = 0; i < 9; i++) {
+		for(int j = 0; j < 9 ; j++) {
+			cout << sudoku[i][j] << " ";
+		}
+		cout << endl;
+	}
+
+	imshow(windowName, sudokuImage);
+	waitKey();
 
     return 0;
 }
