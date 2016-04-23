@@ -17,7 +17,9 @@ class ImageProcessor {
 	public:
 		ImageProcessor(vector<vector<char>>&, Mat&);
 		void PopulateBoard();
+		void RecordAnswers();
 
 	private:
+		double FindCosine(const Point&, const Point&, const Point&);
 		
 };
