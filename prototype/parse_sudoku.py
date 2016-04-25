@@ -37,7 +37,7 @@ def cut_by_cell(image):
     return board
 
 
-def create_fake_board(level):
+def _create_fake_board(level):
     """Create and return make board for test purpose."""
     def repeat_range(start):
         """Repeat 1-9 forever!"""
@@ -65,6 +65,18 @@ def create_fake_board(level):
 
     return problem, answer
 
+def create_fake_board(level):
+    board = np.zeros((9, 9))
+    board[0] = np.array([0, 0, 0, 0, 2, 0, 0 ,0 ,5])
+    board[1] = np.array([0, 9, 0, 0, 0, 0, 8 ,7 ,0])
+    board[2] = np.array([0, 0, 0, 0, 8, 0, 6 ,2 ,0])
+    board[3] = np.array([2, 0, 9, 0, 0, 0, 0 ,0 ,0])
+    board[4] = np.array([5, 0, 0, 4, 0, 8, 0 ,0 ,1])
+    board[5] = np.array([0, 0, 0, 0, 0, 0, 4 ,0 ,7])
+    board[6] = np.array([0, 7, 6, 0, 9, 0, 0 ,0 ,0])
+    board[7] = np.array([0, 2, 1, 0, 0, 0, 0 ,5 ,0])
+    board[8] = np.array([8, 0, 0, 0, 4, 0, 0 ,0 ,0])
+    return board, np.array(np.array([]))
 
 def main():
     '''
@@ -75,6 +87,8 @@ def main():
     print board
     '''
     problem, answer = create_fake_board(5)
+    import pdb;pdb.set_trace()
+    print problem
 
 
 if __name__ == '__main__':
