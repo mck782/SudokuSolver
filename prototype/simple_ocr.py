@@ -3,6 +3,7 @@
 source: http://opencv-python-tutroals.readthedocs.org/en/latest/py_tutorials/py_ml/py_knn/py_knn_opencv/py_knn_opencv.html
 """
 import os
+import sys
 
 import cv2
 from matplotlib import pyplot as plt
@@ -47,7 +48,8 @@ def resize_and_flatten(img, x=20.0, y=20.0):
 def read_digits():
     """Read in digits and parse accordingly."""
     print 'Reading digits'
-    img = cv2.imread('digits.png')
+    # img = cv2.imread('digits.png')
+    img = cv2.imread('negatedDegits.png')
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
     
     # Now we split the image to 5000 cells, each 20x20 size
@@ -78,8 +80,10 @@ def load_data():
     return train_features, train_labels, test_features, test_labels
 
 
-def main():
-    if 'knn_data.npz' not in os.listdir('./'):
+def get_model():
+    # if 'knn_data.npz' not in os.listdir('./'):
+    # if 'knn_data_negated.npz' not in os.listdir('./'):
+    if 'knn_data_negated_1.npz' not in os.listdir('./'):
         train_features, train_labels, test_features, test_labels = read_digits()
         knn = create_model(train_features, train_labels)
         acc = compute_accuracy(knn, test_features, test_labels)
@@ -88,9 +92,13 @@ def main():
     else:
         train_features, train_labels, test_features, test_labels = load_data()
         knn = create_model(train_features, train_labels)
+    return knn
 
+
+def read_number_from_file(filename):
+    knn = get_model()
     # KNN is created.
-    image = cv2.imread('four1.jpg')
+    image = cv2.imread(filename)
     gray_image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
     image = np.negative(gray_image)
 
@@ -103,6 +111,29 @@ def main():
     print 'neighbours: ', neighbours
     print 'dist: ', dist
     print 'Done.'
+
+
+def read_number_from_image(image):
+    knn = get_model()
+    # KNN is created.
+    gray_image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+    image = np.negative(gray_image)
+    image = gray_image
+    show_image(image)
+    processed_img = resize_and_flatten(image)
+    # Pick nearest 5 neighbors.
+    ret,result,neighbours,dist = knn.find_nearest(processed_img, k=5)
+    print 'ret: ', ret
+    print 'result: ', result
+    print 'neighbours: ', neighbours
+    print 'dist: ', dist
+    print 'Done.'
+    return ret
+
+
+def main():
+    filename = sys.argv[1]
+    read_number_from_file(filename)
 
 
 if __name__ == '__main__':
