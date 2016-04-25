@@ -5,22 +5,11 @@ import numpy as np
 import parse_sudoku
 import simple_ocr
 import solve
-# import draw
+import draw
 import stackoverflow_answer
 
 
-def main():
-    # Read in sudoku image file.
-    '''
-    board = parse_sudoku.main()
-    problem = np.zeros(board.shape)
-    # Read numbers.
-    for c in range(9):
-        for r in range(9):
-            problem[r][c] = simple_ocr.read_number_from_image(board[r][c])
-    # Solve Sudoku.
-    solve.solve(problem)
-    '''
+def test_run():
     # Temporary!
     numpy_filename = 'numpy_answer.npy'
     problem, _ = parse_sudoku.create_fake_board(5)
@@ -36,7 +25,42 @@ def main():
     print 'Saved answer as "numpy_answer.npy"'
     if solved:
         # Draw answer. 
-        # draw.draw(problem)
+        draw.draw(problem)
+        print 'Solved!'
+        print 'Answer:'
+        print problem
+    else:
+        print 'Cannot solve the problem.'
+    print 'Done.'
+
+
+def main():
+    # Read in sudoku image file.
+    '''
+    board = parse_sudoku.main()
+    problem = np.zeros(board.shape)
+    # Read numbers.
+    for c in range(9):
+        for r in range(9):
+            problem[r][c] = simple_ocr.read_number_from_image(board[r][c])
+    # Solve Sudoku.
+    solve.solve(problem)
+    '''
+    board = parse_sudoku.run('sudoku.jpg')
+    print 'Board is created.'
+    problem = np.zeros(board.shape)
+    # Read numbers.
+    for c in range(9):
+        for r in range(9):
+            problem[r][c] = simple_ocr.read_number_from_image(board[r][c])
+            # image_name = 'box{}{}.jpg'.format(r, c)
+            # problem[r][c] = simple_ocr.read_number_from_file(image_name)
+    print 'Numbers are read.'
+    print problem
+    solved = stackoverflow_answer.solveSudoku(problem)
+    if solved:
+        # Draw answer. 
+        draw.draw(problem)
         print 'Solved!'
         print 'Answer:'
         print problem

@@ -19,7 +19,7 @@ def cut_by_cell(image):
     row_offset = row_block_size / 10;
     col_offset = col_block_size / 10;
     
-    board = np.zeros((9, 9))
+    board = np.zeros((9, 9), dtype=np.object)
     for i in range(9):
         row_beg = row_block_size * i
         row_end = row_block_size * (i + 1)
@@ -30,9 +30,9 @@ def cut_by_cell(image):
             #sliced_image = image[col_beg:col_end, row_beg:row_end]
             sliced_image = image[col_beg + col_offset : col_end - col_offset,
                                 row_beg + row_offset : row_end - row_offset]
-            number = simple_ocr.read_number_from_image(sliced_image)
-            print 'number read as : {}'.format(number)
-            simple_ocr.show_image(sliced_image)
+            # number = simple_ocr.read_number_from_image(sliced_image)
+            # cv2.imwrite(image_name, sliced_image)
+            number = sliced_image
             board[j][i] = number
     return board
 
@@ -78,14 +78,16 @@ def create_fake_board(level):
     board[8] = np.array([8, 0, 0, 0, 4, 0, 0 ,0 ,0])
     return board, np.array(np.array([]))
 
-def main():
-    '''
+
+def run(filename):
     # Read in sudoku file.
-    image = read_sudoku('sudoku.jpg')
+    image = read_sudoku(filename)
     # Cut by cell.
     board = cut_by_cell(image)
-    print board
-    '''
+    return board
+
+
+def main():
     problem, answer = create_fake_board(5)
     import pdb;pdb.set_trace()
     print problem
