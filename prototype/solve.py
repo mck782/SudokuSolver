@@ -5,6 +5,8 @@ def solve(input_board):
 	board = input_board
 	helper(0,0)
 
+	return board
+
 def helper(row, col):
 	if board[row][col] == 0:
 		for i in range(i):
@@ -16,7 +18,7 @@ def helper(row, col):
 					helper(row+1, 0)
 				else:
 					success = True
-			if success
+			if success:
 				break
 
 			board[row][col] = 0
