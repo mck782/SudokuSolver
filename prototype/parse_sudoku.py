@@ -1,4 +1,5 @@
 import os
+import random
 
 import cv2
 import numpy as np
@@ -36,12 +37,44 @@ def cut_by_cell(image):
     return board
 
 
+def create_fake_board(level):
+    """Create and return make board for test purpose."""
+    def repeat_range(start):
+        """Repeat 1-9 forever!"""
+        num = start
+        while (True):
+            if num == 10:
+                num = 1
+            yield num
+            num += 1
+
+    # Our size is 9x9.
+    board = np.zeros((9, 9))
+    for c in range(board.shape[1]):
+        gen = repeat_range(c+1)
+        for r in range(board.shape[0]):
+            board[r][c] = next(gen) 
+    answer = board.copy()
+
+    # Remove randomly chosen positions.
+    for _ in range(level):
+        r = random.randint(0, 8)
+        c = random.randint(0, 8)
+        board[r][c] = 0
+    problem = board.copy()
+
+    return problem, answer
+
+
 def main():
+    '''
     # Read in sudoku file.
     image = read_sudoku('sudoku.jpg')
     # Cut by cell.
     board = cut_by_cell(image)
     print board
+    '''
+    problem, answer = create_fake_board(5)
 
 
 if __name__ == '__main__':
