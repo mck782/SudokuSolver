@@ -1,14 +1,14 @@
 #include <vector>
 
-using namespace std;
+//using namespace std;
 
 class SudokuSolver {
 	private:
-		vector<vector<char>>& _board;
+		std::vector<std::vector<char>>& _board;
 		bool _success;
 
 	public:
-		SudokuSolver(vector<vector<char>>&);
+		SudokuSolver(std::vector<std::vector<char>>&);
 		void Solve();
 
 	private:

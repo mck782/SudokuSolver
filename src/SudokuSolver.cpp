@@ -1,6 +1,6 @@
 #include "SudokuSolver.h"
 
-SudokuSolver::SudokuSolver(vector<vector<char>>& board) : _board(board), _success(false)
+SudokuSolver::SudokuSolver(std::vector<std::vector<char>>& board) : _board(board), _success(false)
 {}
 
 void SudokuSolver::Solve() {
