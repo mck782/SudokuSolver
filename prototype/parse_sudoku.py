@@ -49,20 +49,19 @@ def slice_image_into_numbers(image):
     col_offset = col_block_size / 10;
     
     board = np.zeros((9, 9), dtype=np.object)
-    for i in range(9):
-        row_beg = row_block_size * i
-        row_end = row_block_size * (i + 1)
-        for j in range(9):
-            col_beg = col_block_size * j
-            col_end = col_block_size * (j + 1)
-            image_name = 'box{}{}.jpg'.format(j, i)
-            #sliced_image = image[col_beg:col_end, row_beg:row_end]
-            sliced_image = image[col_beg + col_offset : col_end - col_offset,
-                                row_beg + row_offset : row_end - row_offset]
-            # number = simple_ocr.read_number_from_image(sliced_image)
-            # cv2.imwrite(image_name, sliced_image)
+    for col in range(9):
+        col_beg = col_block_size * col
+        col_end = col_block_size * (col + 1)
+        for row in range(9):
+            row_beg = row_block_size * row
+            row_end = row_block_size * (row + 1)
+            # sliced_image = image[row_beg:row_end, col_beg:col_end]
+            sliced_image = image[row_beg + row_offset : row_end - row_offset,
+                                 col_beg + col_offset : col_end - col_offset]
+            image_name = 'box{}{}.jpg'.format(row, col)
+            cv2.imwrite(image_name, sliced_image)
             number = sliced_image
-            board[j][i] = number
+            board[row][col] = number
     return board
 
 
@@ -108,11 +107,11 @@ def main(filename=None):
     --------
     If `filename` is not given, a hard-coded problem will be returned.
     """
-    if filename:
+    if not filename:
         problem, answer = create_fake_board(5)
     else:
         image = read_sudoku(filename)
-        board = slice_image_into_numbers(image)
+        problem = slice_image_into_numbers(image)
         answer = None
     print problem
     return problem
