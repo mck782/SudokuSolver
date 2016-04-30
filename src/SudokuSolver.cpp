@@ -1,3 +1,11 @@
+// ------------------
+// SudokuSolver.c++
+// Copyright (C) 2016
+// Mikkel C. Kim
+// Hyunchel Kim
+// Jungmo Ku
+// ------------------
+
 #include "SudokuSolver.h"
 
 SudokuSolver::SudokuSolver(std::vector<std::vector<char>>& board) : _board(board), _success(false)
