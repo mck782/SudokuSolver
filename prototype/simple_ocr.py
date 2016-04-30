@@ -9,6 +9,8 @@ import cv2
 from matplotlib import pyplot as plt
 import numpy as np
 
+import plot_images
+
 
 def show_image(image):
     """Show a closable image."""
@@ -96,18 +98,15 @@ def read_number_from_file(filename):
     knn = get_model()
     # KNN is created.
     image = cv2.imread(filename)
-    # show_image(image)
     gray_image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
     image = np.negative(gray_image)
 
     processed_img = resize_and_flatten(image)
     # Pick nearest 5 neighbors.
     ret,result,neighbours,dist = knn.find_nearest(processed_img, k=5)
+    print 'KNN'
     print 'ret: ', ret
-    print 'result: ', result
     print 'neighbours: ', neighbours
-    print 'dist: ', dist
-    print 'Done.'
     return ret
 
 
@@ -116,15 +115,44 @@ def read_number_from_image(image):
     # KNN is created.
     gray_image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
     image = np.negative(gray_image)
-    # show_image(image)
     processed_img = resize_and_flatten(image)
     # Pick nearest 5 neighbors.
     ret,result,neighbours,dist = knn.find_nearest(processed_img, k=5)
     print 'ret: ', ret
-    print 'result: ', result
     print 'neighbours: ', neighbours
-    print 'dist: ', dist
-    print 'Done.'
+    # FUN
+    # Let's give threshold for a clearer picture.
+    ret, thresh = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
+    # plot_images.compare_images(image, thresh)
+
+    # FUN ends
+    return ret
+
+
+def clean_image_and_save(filename):
+    image = cv2.imread(filename)
+    gray_image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+    image = np.negative(gray_image)
+    ret, thresh = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
+    cv2.imwrite(filename, thresh)
+    show_image(image)
+
+
+def read_with_tesseract(image_name):
+    # try tessearct
+    import pytesseract
+    from PIL import Image
+    from PIL import ImageFilter
+    from StringIO import StringIO
+    clean_image_and_save(image_name)
+    image = Image.open(image_name)
+    # image = Image.open('four1.jpg')
+    image = image.filter(ImageFilter.SHARPEN)
+    ret = pytesseract.image_to_string(image, config='-psm 10 no_batch digits')
+    print image_name
+    print 'tesseract: {}'.format(ret)
+    if ret == '.' or ret == '':
+        return 0
     return ret
 
 

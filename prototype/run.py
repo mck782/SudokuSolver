@@ -36,25 +36,16 @@ def test_run():
 
 def main():
     # Read in sudoku image file.
-    '''
-    board = parse_sudoku.main()
-    problem = np.zeros(board.shape)
-    # Read numbers.
-    for c in range(9):
-        for r in range(9):
-            problem[r][c] = simple_ocr.read_number_from_image(board[r][c])
-    # Solve Sudoku.
-    solve.solve(problem)
-    '''
-    board = parse_sudoku.main('sudoku.jpg')
+    board = parse_sudoku.main('sudoku.png')
     print 'Board is created.'
     problem = np.zeros(board.shape)
     # Read numbers.
     for c in range(9):
         for r in range(9):
-            problem[r][c] = simple_ocr.read_number_from_image(board[r][c])
+            # problem[r][c] = simple_ocr.read_number_from_image(board[r][c])
+            image_name = 'box{}{}.jpg'.format(r, c)
+            problem[r][c] = simple_ocr.read_with_tesseract(image_name)
             # problem[r][c] = simple_ocr.read_number_from_file(image_name)
-            pass
     print 'Numbers are read.'
     print problem
     solved = stackoverflow_answer.solveSudoku(problem)
