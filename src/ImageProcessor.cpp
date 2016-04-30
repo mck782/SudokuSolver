@@ -7,6 +7,7 @@
 // ------------------
 
 #include "ImageProcessor.h"
+#include <iostream>
 
 ImageProcessor::ImageProcessor(std::vector<std::vector<char>>& board, cv::Mat& sudokuImage) : _board(board), _sudokuImage(sudokuImage) {
     cv::Size size = _sudokuImage.size();
@@ -24,6 +25,7 @@ void ImageProcessor::PopulateBoard() {
     tess.Init(NULL, "eng");
 
     // Treat the image as a single text line.
+    // TODO : Inspect what's impact of using 7 instead of 10.
     tess.SetPageSegMode(static_cast<tesseract::PageSegMode>(7));
 
     // Only recognize numbers.
@@ -39,8 +41,19 @@ void ImageProcessor::PopulateBoard() {
             cv::Mat binary(block.size(), block.type());
             cv::threshold(block, binary, 100, 255, cv::THRESH_BINARY);
 
+            // Filter out noise by Gaussian pyramid methods.
+            cv::Mat pyrDown, pyrUp;
+            cv::pyrDown(binary, pyrDown, cv::Size(binary.cols/2, binary.rows/2));
+            cv::pyrUp(pyrDown, pyrUp, binary.size());
+
+            // Make the cell 4 times bigger by making border.
+            int borderRows = (int)(pyrUp.rows * 2);
+            int borderCols = (int)(pyrUp.cols * 2);
+            cv::Mat border;
+            cv::copyMakeBorder(pyrUp, border, borderRows, borderRows, borderCols, borderCols, cv::BORDER_CONSTANT, cv::Scalar(255, 255, 255) );
+
             // Use Tesseract to read number from each cell.
-            tess.SetImage((uchar*)binary.data, binary.size().width, binary.size().height, binary.channels(), binary.step1());
+            tess.SetImage((uchar*)border.data, border.size().width, border.size().height, border.channels(), border.step1());
             tess.Recognize(0);
             std::string text = tess.GetUTF8Text();
 

@@ -10,14 +10,19 @@
 #include "ImageProcessor.h"
 
 const char* windowName = "SudokuSolver";
-const char* sudokuFile = "../data/sudoku.jpg";
 
-int main() {
+int main(int argc, char* argv[]) {
 	// Initialize a 2D vector that represents the given sudoku board.
 	std::vector<std::vector<char>> board(BOARDSIZE, std::vector<char>(BOARDSIZE));
 
 	// Read the sudoku image.
 	cv::namedWindow(windowName, 1);
+	char* sudokuFile; 
+	if(argc == 2) {
+		sudokuFile = argv[1];
+	} else {
+		// throw
+	}
 	cv::Mat sudokuImage = cv::imread(sudokuFile, 1);
 
 	// Populate the board using the given image.
