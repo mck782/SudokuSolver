@@ -23,26 +23,37 @@ void ImageProcessor::PopulateBoard() {
 
     // Initialize a Tesseract instance.
     tesseract::TessBaseAPI tess;
-    // tess.Init(NULL, "eng");
 
     for(int i = 0; i < BOARDSIZE; ++i) {
         for(int j = 0; j < BOARDSIZE; ++j) {
             
+            // TODO: Investigate further as to why this would help Tesseract's accuracy.
             tess.Init(NULL, "eng");
 
             // Treat the image as a single text line.
-            // TODO : Inspect what's impact of using 7 instead of 10.
+            //
+            // -psm N(integer)
+            // Set Tesseract to only run a subset of layout analysis and assume a certain form of image. The options for N are:
+            //
+            // 0 = Orientation and script detection (OSD) only.
+            // 1 = Automatic page segmentation with OSD.
+            // 2 = Automatic page segmentation, but no OSD, or OCR.
+            // 3 = Fully automatic page segmentation, but no OSD. (Default)
+            // 4 = Assume a single column of text of variable sizes.
+            // 5 = Assume a single uniform block of vertically aligned text.
+            // 6 = Assume a single uniform block of text.
+            // 7 = Treat the image as a single text line.
+            // 8 = Treat the image as a single word.
+            // 9 = Treat the image as a single word in a circle.
+            // 10 = Treat the image as a single character.
             tess.SetPageSegMode(static_cast<tesseract::PageSegMode>(7));
 
             // Only recognize numbers.
             tess.SetVariable("tessedit_char_whitelist", "0123456789");
 
-
-            // Definds the region of interest. Get each cell from the original sudoku image.
+            // Defines the region of interest. Get each cell from the original sudoku image.
             cv::Rect rect = cv::Rect(_cellWidth * j + _cellOffsetWidth, _cellHeight * i + _cellOffsetHeight, _cellWidth - 2 * _cellOffsetWidth, _cellHeight - 2 * _cellOffsetHeight);
             cv::Mat block = cv::Mat(_sudokuImage, rect);
-
-            // std::string name = "../data/" + std::to_string(i) + std::to_string(j) + ".jpg";
 
             // Apply thresholding to get binary image.
             cv::Mat binary(block.size(), block.type());
@@ -58,9 +69,6 @@ void ImageProcessor::PopulateBoard() {
             int borderCols = (int)(pyrUp.cols * 2);
             cv::Mat border;
             cv::copyMakeBorder(pyrUp, border, borderRows, borderRows, borderCols, borderCols, cv::BORDER_CONSTANT, cv::Scalar(255, 255, 255) );
-
-            // cv::imwrite(name,border);
-            // cv::Mat numRead = cv::imread(name);
 
             // Use Tesseract to read number from each cell.
             tess.SetImage((uchar*)border.data, border.size().width, border.size().height, border.channels(), border.step1());
