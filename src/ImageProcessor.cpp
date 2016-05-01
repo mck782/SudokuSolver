@@ -20,22 +20,29 @@ ImageProcessor::ImageProcessor(std::vector<std::vector<char>>& board, cv::Mat& s
 }
 
 void ImageProcessor::PopulateBoard() {
+
     // Initialize a Tesseract instance.
     tesseract::TessBaseAPI tess;
-    tess.Init(NULL, "eng");
-
-    // Treat the image as a single text line.
-    // TODO : Inspect what's impact of using 7 instead of 10.
-    tess.SetPageSegMode(static_cast<tesseract::PageSegMode>(7));
-
-    // Only recognize numbers.
-    tess.SetVariable("tessedit_char_whitelist", "0123456789");
+    // tess.Init(NULL, "eng");
 
     for(int i = 0; i < BOARDSIZE; ++i) {
         for(int j = 0; j < BOARDSIZE; ++j) {
+            
+            tess.Init(NULL, "eng");
+
+            // Treat the image as a single text line.
+            // TODO : Inspect what's impact of using 7 instead of 10.
+            tess.SetPageSegMode(static_cast<tesseract::PageSegMode>(7));
+
+            // Only recognize numbers.
+            tess.SetVariable("tessedit_char_whitelist", "0123456789");
+
+
             // Definds the region of interest. Get each cell from the original sudoku image.
             cv::Rect rect = cv::Rect(_cellWidth * j + _cellOffsetWidth, _cellHeight * i + _cellOffsetHeight, _cellWidth - 2 * _cellOffsetWidth, _cellHeight - 2 * _cellOffsetHeight);
             cv::Mat block = cv::Mat(_sudokuImage, rect);
+
+            // std::string name = "../data/" + std::to_string(i) + std::to_string(j) + ".jpg";
 
             // Apply thresholding to get binary image.
             cv::Mat binary(block.size(), block.type());
@@ -52,6 +59,9 @@ void ImageProcessor::PopulateBoard() {
             cv::Mat border;
             cv::copyMakeBorder(pyrUp, border, borderRows, borderRows, borderCols, borderCols, cv::BORDER_CONSTANT, cv::Scalar(255, 255, 255) );
 
+            // cv::imwrite(name,border);
+            // cv::Mat numRead = cv::imread(name);
+
             // Use Tesseract to read number from each cell.
             tess.SetImage((uchar*)border.data, border.size().width, border.size().height, border.channels(), border.step1());
             tess.Recognize(0);
@@ -59,7 +69,7 @@ void ImageProcessor::PopulateBoard() {
 
             // Remove whitespaces from read text.
             text.erase(remove_if(text.begin(), text.end(), isspace), text.end());
-
+            
             // Populate the board.
             if(text == "") {
                 _board[i][j] = '.';
@@ -70,6 +80,13 @@ void ImageProcessor::PopulateBoard() {
             }
         }
     } 
+
+    for(int i = 0; i < BOARDSIZE; ++i){
+        for(int j = 0; j < BOARDSIZE; ++j){
+            std::cout<< _board[i][j]; 
+        }
+        std::cout<<std::endl;
+    }
 }
 
 void ImageProcessor::RecordAnswers() {
