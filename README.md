@@ -10,7 +10,13 @@ Contributors:
 
 ## Introduction
 
-After getting the image of sudoku problem, solve the sudoku and provide the solution image.
+This application reads an image of Sudoku problem, solves the problem, and outputs a solution image.
+
+Example problem set and solution set follows:
+
+![](examples/problem.png)
+![](examples/solution.png)
+
 
 ## Objectives
 
@@ -27,13 +33,20 @@ Objective 3: Extend the application for Android ans iOS use
  * Let the application to take the picture of sudoku and get the solution
 
 
-
 ## Test
 
-Will be implemented
+Will be implemented.
 
 
 ## Dependencies
 
 opencv-3.1.0
 tesseract-3.05.00dev
+
+Docker image is used to compile and run our application.
+The exact docker image is uploaded to [gnis/vision][0].
+
+**More details on dependencies and installation steps will be updated to README.**
+
+
+[0]: http://hub.docker.com/r/gnis/vision
