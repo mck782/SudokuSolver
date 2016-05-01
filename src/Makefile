@@ -8,6 +8,8 @@ all:
 SudokuSolver: Application.cpp SudokuSolver.h SudokuSolver.cpp ImageProcessor.h ImageProcessor.cpp
 	$(cc) ${FLAGS} Application.cpp SudokuSolver.cpp ImageProcessor.cpp -o SudokuSolver ${PKG_CONFIG} 
 
+dev: DevRun.cpp SudokuSolver.h SudokuSolver.cpp ImageProcessor.h ImageProcessor.cpp
+	$(cc) ${FLAGS} DevRun.cpp SudokuSolver.cpp ImageProcessor.cpp -o SudokuSolver ${PKG_CONFIG} 
+
 clean:
 	-rm -f SudokuSolver
-	
