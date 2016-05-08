@@ -9,6 +9,8 @@
 #include "SudokuSolver.h"
 #include "ImageProcessor.h"
 
+#include <iostream>
+
 const char* windowName = "SudokuSolver";
 
 int main(int argc, char* argv[]) {
@@ -16,17 +18,18 @@ int main(int argc, char* argv[]) {
 	std::vector<std::vector<char>> board(BOARDSIZE, std::vector<char>(BOARDSIZE));
 
 	// Read the sudoku image.
-	cv::namedWindow(windowName, 1);
+	cv::namedWindow(windowName, cv::WINDOW_NORMAL);
 	char* sudokuFile; 
 	if(argc == 2) {
 		sudokuFile = argv[1];
 	} else {
 		// throw
 	}
-	cv::Mat sudokuImage = cv::imread(sudokuFile, 1);
+	cv::Mat sudokuImage = cv::imread(sudokuFile, CV_LOAD_IMAGE_GRAYSCALE);
 
 	// Populate the board using the given image.
 	ImageProcessor imageProcessor(board, sudokuImage);
+	imageProcessor.Preprocessing();
 	imageProcessor.PopulateBoard();
 
 	// Solve the board.

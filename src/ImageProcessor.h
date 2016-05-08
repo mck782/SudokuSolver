@@ -27,6 +27,8 @@ private:
 	std::vector<std::vector<char>>& _board;
 	std::vector<int> _emptyX;
 	std::vector<int> _emptyY;
+
+	cv::Mat _morphologyElement;
 	cv::Mat& _sudokuImage;
 
 	size_t _cellWidth;
@@ -43,6 +45,11 @@ public:
 	ImageProcessor(std::vector<std::vector<char>>&, cv::Mat&);
 
 	/**
+     * Preprocess the image.
+     */
+	void Preprocessing();
+
+	/**
      * Populate the board with the given image.
      */
 	void PopulateBoard();
@@ -51,4 +58,9 @@ public:
      * Record the answers to the image.
      */
 	void RecordAnswers();
+
+private:
+	void SplitThreshold(cv::Mat&);
+	bool FindLargestCC(cv::Mat&, std::vector<cv::Point>&);
+	void WarpBoard(cv::Mat&, const std::vector<cv::Point>&);
 };
