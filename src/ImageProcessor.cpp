@@ -52,6 +52,17 @@ void ImageProcessor::Preprocessing() {
         WarpBoard(preprocess, contour);
     }
 
+    // Apply more threshold.
+    cv::GaussianBlur(_sudokuImage, _sudokuImage, cv::Size(7,7), 1.8, 1.8);
+    // cv::adaptiveThreshold(_sudokuImage, _sudokuImage, 255,CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY, 25, 2);
+
+    int threshold_val = 120;
+    GetBrightness(_sudokuImage, threshold_val);
+
+    // int threshold_val = static_cast<int>(brightness * );
+
+    cv::threshold(_sudokuImage, _sudokuImage, threshold_val, 255, cv::THRESH_BINARY); // 120, 255
+
     // Convert the image back to RGB.
     cv::cvtColor(_sudokuImage, _sudokuImage, CV_GRAY2BGR);
 }
@@ -79,19 +90,19 @@ void ImageProcessor::PopulateBoard() {
             cv::Mat binary(block.size(), block.type());
             cv::threshold(block, binary, 100, 255, cv::THRESH_BINARY);
 
-            // Filter out noise by Gaussian pyramid methods.
-            cv::Mat pyrDown, pyrUp;
-            cv::pyrDown(binary, pyrDown, cv::Size(binary.cols/2, binary.rows/2));
-            cv::pyrUp(pyrDown, pyrUp, binary.size());
+            // // Filter out noise by Gaussian pyramid methods.
+            // cv::Mat pyrDown, pyrUp;
+            // cv::pyrDown(binary, pyrDown, cv::Size(binary.cols/2, binary.rows/2));
+            // cv::pyrUp(pyrDown, pyrUp, binary.size());
 
-            // Make the cell 4 times bigger by making border.
-            int borderRows = (int)(pyrUp.rows * 2);
-            int borderCols = (int)(pyrUp.cols * 2);
-            cv::Mat border;
-            cv::copyMakeBorder(pyrUp, border, borderRows, borderRows, borderCols, borderCols, cv::BORDER_CONSTANT, cv::Scalar(255, 255, 255) );
+            // // Make the cell 4 times bigger by making border.
+            // int borderRows = (int)(pyrUp.rows * 2);
+            // int borderCols = (int)(pyrUp.cols * 2);
+            // cv::Mat border;
+            // cv::copyMakeBorder(pyrUp, border, borderRows, borderRows, borderCols, borderCols, cv::BORDER_CONSTANT, cv::Scalar(255, 255, 255) );
 
             // Use Tesseract to read number from each cell.
-            tess.SetImage((uchar*)border.data, border.size().width, border.size().height, border.channels(), border.step1());
+            tess.SetImage((uchar*)binary.data, binary.size().width, binary.size().height, binary.channels(), binary.step1());
             tess.Recognize(0);
             std::string text = tess.GetUTF8Text();
 
@@ -108,6 +119,12 @@ void ImageProcessor::PopulateBoard() {
             }
         }
     } 
+    for(int i = 0; i < BOARDSIZE; ++i){
+        for(int j = 0; j < BOARDSIZE; ++j){
+            std::cout<< _board[i][j]; 
+        }
+        std::cout<<std::endl;
+    }
 }
 
 void ImageProcessor::RecordAnswers() {
@@ -121,7 +138,9 @@ void ImageProcessor::RecordAnswers() {
                     std::string c = std::string(1, _board[i][j]);
 
                     // Record the answer in the right cell.
-                    putText(_sudokuImage, c, cvPoint(_cellWidth * j + 2 * _cellOffsetWidth, _cellHeight * (i + 1) - 2 * _cellOffsetHeight), cv::FONT_HERSHEY_SIMPLEX, 10, cv::Scalar(0, 0, 255), 3, CV_AA);
+                    putText(_sudokuImage, c, cvPoint(_cellWidth * j + 2 * _cellOffsetWidth, _cellHeight * (i + 1) - 2 * _cellOffsetHeight), cv::FONT_HERSHEY_SIMPLEX, 10, cv::Scalar(0, 0, 255), 2, CV_AA);
+                
+                    // putText(_sudokuImage, c, cvPoint(_cellWidth * j + 2 * _cellOffsetWidth, _cellHeight * (i + 1) - 2 * _cellOffsetHeight), cv::FONT_HERSHEY_SIMPLEX, 10, cv::Scalar(0, 0, 255), 3, CV_AA);
                 }
             }
         }
@@ -176,7 +195,8 @@ bool ImageProcessor::FindLargestCC(cv::Mat& image, std::vector<cv::Point>& conto
     cv::approxPolyDP(cv::Mat(contours[maxPosition.y]), contour, cv::arcLength(cv::Mat(contours[maxPosition.y]), true)*0.02, true);
 
     // Return true if the found largest connect component is larget enough.
-    return cv::contourArea(cv::Mat(contours[maxPosition.y])) > 3500 * 3500 / 3;
+    // return cv::contourArea(cv::Mat(contours[maxPosition.y])) > 3500 * 3500 / 3;
+    return cv::contourArea(cv::Mat(contours[maxPosition.y])) > _cellWidth * _cellHeight * 27;
 }
 
 bool CompareCoordinateSum(cv::Point a, cv::Point b) {
@@ -194,6 +214,14 @@ void ImageProcessor::WarpBoard(cv::Mat& image, const std::vector<cv::Point>& con
         input[2] = *std::max_element(contour.begin(), contour.end(), CompareCoordinateSum);
         input[3] = *std::min_element(contour.begin(), contour.end(), CompareCoordinateDiff);
 
+        size_t warpOffsetWidth = _cellOffsetWidth / 7;
+        size_t warpOffsetHeight = _cellOffsetHeight / 7;
+
+        input[0] = cv::Point2f(input[0].x + warpOffsetWidth, input[0].y + warpOffsetHeight);
+        input[1] = cv::Point2f(input[1].x - warpOffsetWidth, input[1].y + warpOffsetHeight);
+        input[2] = cv::Point2f(input[2].x - warpOffsetWidth, input[2].y - warpOffsetHeight);
+        input[3] = cv::Point2f(input[3].x + warpOffsetWidth, input[3].y - warpOffsetHeight);
+
         cv::Point2f output[4];
         output[0] = cv::Point2f(0, 0);
         output[1] = cv::Point2f(image.cols - 1, 0);
@@ -201,5 +229,26 @@ void ImageProcessor::WarpBoard(cv::Mat& image, const std::vector<cv::Point>& con
         output[3] = cv::Point2f(0, image.rows - 1);
 
         cv::Mat transform = cv::getPerspectiveTransform(input, output);
-        cv::warpPerspective(image, _sudokuImage, transform, _sudokuImage.size());
+        cv::warpPerspective(_sudokuImage, _sudokuImage, transform, _sudokuImage.size());
 }
+
+// get brightness 0.0 to 1.0 
+void ImageProcessor::GetBrightness(const cv::Mat& img, int& threshold_val) {
+    cv::Mat temp, color[3], lum;
+    temp = img;
+
+    cv::split(temp, color);
+
+    color[0] = color[0] * 0.299;
+    color[1] = color[1] * 0.587;
+    color[2] = color[2] * 0.114;
+
+
+    lum = color[0] + color [1] + color[2];
+
+    cv::Scalar summ = sum(lum);
+
+    double brightness = summ[0]/((pow(2,8)-1)*img.rows * img.cols) * 2;
+    threshold_val = static_cast<int>((brightness * 380) - 40);
+    threshold_val = (threshold_val / 10) * 10;
+ }

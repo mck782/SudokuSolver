@@ -63,4 +63,5 @@ private:
 	void SplitThreshold(cv::Mat&);
 	bool FindLargestCC(cv::Mat&, std::vector<cv::Point>&);
 	void WarpBoard(cv::Mat&, const std::vector<cv::Point>&);
+	void GetBrightness(const cv::Mat& img, int& threshold_val);
 };
