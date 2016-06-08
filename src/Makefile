@@ -11,5 +11,8 @@ SudokuSolver: Application.cpp SudokuSolver.h SudokuSolver.cpp ImageProcessor.h I
 dev: DevRun.cpp SudokuSolver.h SudokuSolver.cpp ImageProcessor.h ImageProcessor.cpp
 	$(cc) ${FLAGS} DevRun.cpp SudokuSolver.cpp ImageProcessor.cpp -o SudokuSolver ${PKG_CONFIG} 
 
+test: TestSudokuSolver.cpp SudokuSolver.h SudokuSolver.cpp ImageProcessor.h ImageProcessor.cpp
+	$(cc) ${FLAGS} TestSudokuSolver.cpp SudokuSolver.cpp ImageProcessor.cpp -o TestSudokuSolver ${PKG_CONFIG} 
+
 clean:
 	-rm -f SudokuSolver
